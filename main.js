@@ -98,11 +98,10 @@ const isText = line =>
     .some(test => test(line));
 
 const convertBold = line => 
-  line.replace(new RegExp("\\*\\*([^*]+)\\*\\*", "g"), "<strong>$1</strong>");
+  line.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 const convertItalics = line =>
-  line.replace(new RegExp("\\*([^*]+)\\*", "g"), "<i>$1</i>")
-      .replace(new RegExp("_([^_]+)_", "g"), "<i>$1</i>");
-
+  line.replace(/\*([^*]+)\*/g, "<i>$1</i>")
+      .replace(/_([^_]+)_/g, "<i>$1</i>");
 
 
 setupEventListener();
