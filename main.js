@@ -27,7 +27,11 @@ const converter = {
     return linesAsHtml.join("");
   },
   convertLine(line, lookAhead) {
-    return this[this.state](line, lookAhead);
+    const convertedLine = this[this.state](line, lookAhead);
+    if (this.state === "code") {
+      return convertedLine;
+    }
+    return convertBold(convertedLine);
   },
   normal(line, lookAhead) {
     if (isHeader(line)) {
@@ -88,9 +92,11 @@ const isCodeIndicator = line => line.startsWith("```");
 const isBulletedListItem = line => line.startsWith("*");
 const isOrderedListItem = line => line.match(/^\d+\./);
 const isBlank = line => line.length === 0;
-
 const isText = line =>
   ![isHeader, isCodeIndicator, isBulletedListItem, isOrderedListItem, isBlank]
     .some(test => test(line));
+
+const convertBold = line => 
+  line.replace(new RegExp("\\*\\*([^*]+)\\*\\*", "g"), "<strong>$1</strong>");
 
 setupEventListener();
