@@ -27,13 +27,22 @@ const converter = {
     return linesAsHtml.join("");
   },
   convertLine(line, lookAhead) {
-    const convertedLine = this[this.state](line, lookAhead);
+    // This will create paragraphs, unordered lists, ordered lists,
+    //  headers and code blocks
+    const partiallyConvertedLine = this[this.state](line, lookAhead);
+
+    // Since "code" blocks should display literal text we don't want to
+    //  run any other conversions on them.
     if (this.state === "code") {
-      return convertedLine;
+      return partiallyConvertedLine;
     }
+
+    // These conversions should happen in all "text blocks" except "code" blocks
+    //  NOTE: The order of these calls matter.
     return convertLink(
+           convertImage(
            convertItalics(
-           convertBold(convertedLine)))
+           convertBold(partiallyConvertedLine))));
   },
   normal(line, lookAhead) {
     if (isHeader(line)) {
@@ -103,7 +112,11 @@ const convertBold = line =>
 const convertItalics = line =>
   line.replace(/\*([^*]+)\*/g, "<i>$1</i>")
       .replace(/_([^_]+)_/g, "<i>$1</i>");
+const convertImage = line => 
+  line.replace(/!\[([^\]]+)\]\(([^\)]+)\)/g, "<img alt='$1' src='$2'/>");
 const convertLink = line => 
   line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "<a href='$2'>$1</a>");
 
+
+// Start everything up...
 setupEventListener();
