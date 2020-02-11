@@ -31,8 +31,9 @@ const converter = {
     if (this.state === "code") {
       return convertedLine;
     }
-    return convertItalics(
-           convertBold(convertedLine))
+    return convertLink(
+           convertItalics(
+           convertBold(convertedLine)))
   },
   normal(line, lookAhead) {
     if (isHeader(line)) {
@@ -102,6 +103,7 @@ const convertBold = line =>
 const convertItalics = line =>
   line.replace(/\*([^*]+)\*/g, "<i>$1</i>")
       .replace(/_([^_]+)_/g, "<i>$1</i>");
-
+const convertLink = line => 
+  line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "<a href='$2'>$1</a>");
 
 setupEventListener();
