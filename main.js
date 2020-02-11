@@ -1,10 +1,18 @@
-const isHeader = line => line.startsWith("#");
-const isCodeIndicator = line => line.startsWith("```");
-const isBulletedListItem = line => line.startsWith("*");
-const isBlank = line => line.length === 0;
+function setupEventListener() {
+  const goButton = document.getElementById("go");
 
-const isText = line =>
-  ![isHeader, isCodeIndicator, isBulletedListItem, isBlank].some(test => test(line));
+  goButton.addEventListener("click", evt => {
+    evt.preventDefault();
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+
+    fetch(input.value)
+      .then(resp => resp.text())
+      .then(mdText => {
+        output.innerHTML = converter.convertToHtml(mdText);
+      });
+  });
+}
 
 const converter = {
   state: "normal",
@@ -32,6 +40,9 @@ const converter = {
     } else if (isBulletedListItem(line)) {
       this.state = "bulletedList";
       return `<ul><li>${line.slice(1)}</li>`;
+    } else if (isOrderedListItem(line)) {
+      this.state = "orderedList";
+      return `<ol><li>${line.slice(2)}</li>`;
     } else if (isBlank(line) && isText(lookAhead)) {
       this.state = "paragraph";
     }
@@ -52,6 +63,14 @@ const converter = {
     }
     return result;
   },
+  orderedList(line, lookAhead) {
+    let result = `<li>${line.slice(2)}</li>`;
+    if (!isOrderedListItem(lookAhead)) {
+      this.state = "normal";
+      result += "</ol>";
+    }
+    return result;
+  },
   paragraph(line, lookAhead) {
     if (!isBlank(line)) {
       return line;
@@ -64,20 +83,14 @@ const converter = {
   }
 }
 
-function setupEventListener() {
-  const goButton = document.getElementById("go");
+const isHeader = line => line.startsWith("#");
+const isCodeIndicator = line => line.startsWith("```");
+const isBulletedListItem = line => line.startsWith("*");
+const isOrderedListItem = line => line.match(/^\d+\./);
+const isBlank = line => line.length === 0;
 
-  goButton.addEventListener("click", evt => {
-    evt.preventDefault();
-    const input = document.getElementById("input");
-    const output = document.getElementById("output");
-
-    fetch(input.value)
-      .then(resp => resp.text())
-      .then(mdText => {
-        output.innerHTML = converter.convertToHtml(mdText);
-      });
-  });
-}
+const isText = line =>
+  ![isHeader, isCodeIndicator, isBulletedListItem, isOrderedListItem, isBlank]
+    .some(test => test(line));
 
 setupEventListener();
