@@ -31,7 +31,8 @@ const converter = {
     if (this.state === "code") {
       return convertedLine;
     }
-    return convertBold(convertedLine);
+    return convertItalics(
+           convertBold(convertedLine))
   },
   normal(line, lookAhead) {
     if (isHeader(line)) {
@@ -98,5 +99,10 @@ const isText = line =>
 
 const convertBold = line => 
   line.replace(new RegExp("\\*\\*([^*]+)\\*\\*", "g"), "<strong>$1</strong>");
+const convertItalics = line =>
+  line.replace(new RegExp("\\*([^*]+)\\*", "g"), "<i>$1</i>")
+      .replace(new RegExp("_([^_]+)_", "g"), "<i>$1</i>");
+
+
 
 setupEventListener();
