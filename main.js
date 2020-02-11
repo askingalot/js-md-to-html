@@ -1,9 +1,10 @@
-function setupEventListener() {
-  const goButton = document.getElementById("go");
+function main() {
+  const input = document.getElementById("input");
+  input.focus();
 
+  const goButton = document.getElementById("go");
   goButton.addEventListener("click", evt => {
     evt.preventDefault();
-    const input = document.getElementById("input");
     const output = document.getElementById("output");
 
     fetch(input.value)
@@ -113,10 +114,10 @@ const convertItalics = line =>
   line.replace(/\*([^*]+)\*/g, "<i>$1</i>")
       .replace(/_([^_]+)_/g, "<i>$1</i>");
 const convertImage = line => 
-  line.replace(/!\[([^\]]+)\]\(([^\)]+)\)/g, "<img alt='$1' src='$2'/>");
+  line.replace(/!\[([^\]]+)\]\(([^)]+)\)/g, "<img alt='$1' src='$2'/>");
 const convertLink = line => 
-  line.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, "<a href='$2'>$1</a>");
+  line.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "<a href='$2'>$1</a>");
 
 
 // Start everything up...
-setupEventListener();
+main();
